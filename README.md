@@ -71,9 +71,9 @@ Stroll.install()
 data {
             baseUrl = "https://www.baidu.com"
             result { text -> StrollLog.msg(text)
-                Toast.makeText(context,"获取的数据： $text",Toast.LENGTH_SHORT).show()}
+                StrollLog.msg(text)
             failer { msg -> StrollLog.msg(msg)
-                Toast.makeText(context,"获取数据出错： $msg",Toast.LENGTH_SHORT).show()}
+                StrollLog.msg(msg)
         }
 ```
 
@@ -81,7 +81,7 @@ data {
 ```java
 Stroll.downloadFile()
                     .setBaseUrl("http://gdown.baidu.com/data/wisegame/a920cdeb1c1f59bc/baiduwangpan_527.apk")
-                    .savePath(path, fileName)
+                    .savePath("sdcard/Stroll", "a.apk")
                     .setCallBack(object : DownloadFileCallBack{
                         override fun start() {
                         }
@@ -104,8 +104,8 @@ Stroll.downloadFile()
 ```java
 download {
                 baseUrl = "http://gdown.baidu.com/data/wisegame/a920cdeb1c1f59bc/baiduwangpan_527.apk"
-                savePath = path
-                fileName = "$it$name"
+                savePath = "sdcard/Stroll"
+                fileName = "a.apk"
                 progress { pro ->
 			StrollLog.msg("下载文件进度：$pro")
                 }
@@ -118,9 +118,27 @@ download {
             }
 ```
 #### 加载图片示例
+##### 无回调
 ```java
 	val target = View(context)
         val path = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1536086522,2785217828&fm=26&gp=0.jpg"
         Stroll.loadImageWithUrl(target, path)
+```
+##### 有回调
+```java
+Stroll.loadImageWithUrl(targetView, url,true,object : ImageListener{
+            override fun progress(progress: Int) {
+                StrollLog.msg("下载进度：$progress")
+            }
+
+            override fun complate() {
+	    StrollLog.msg("下载完成")
+            }
+
+            override fun error() {
+	    StrollLog.msg("下载出错")
+            }
+
+        })
 ```
 
