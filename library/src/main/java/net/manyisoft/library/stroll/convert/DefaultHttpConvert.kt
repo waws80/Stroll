@@ -115,9 +115,10 @@ class DefaultHttpConvert : HttpConvert {
      */
     private fun downLoadData(request: HttpURLConnection, callBack: CallBack, handler: Handler) {
         callBack.asyncSuccess(request.contentLength.toLong(),request.inputStream)
+        val str = String(request.inputStream.use { it.readBytes() }, Charset.forName("UTF-8"))
         handler.post {
             callBack.complate()
-            callBack.success(String(request.inputStream.use { it.readBytes() }, Charset.forName("UTF-8")))
+            callBack.success(str)
             if (effective(tag, url) && tag.isNotEmpty()){
                 queue.remove(url)
             }
