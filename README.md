@@ -55,7 +55,7 @@ Stroll.install()
 ####  获取数据示例
 ```java
         Stroll.get()
-                .setBaseUrl("https://www.qigeairen.com")
+                .setBaseUrl("https://www.baidu.com")
                 .setCallBack(object : StringCallBack {
                     override fun success(text: String) {
                         StrollLog.msg(text)
@@ -66,12 +66,22 @@ Stroll.install()
                 })
                 .build()
 ```
+##### or DSL 写法
+```java
+data {
+            baseUrl = "https://www.baidu.com"
+            result { text -> StrollLog.msg(text)
+                StrollLog.msg(text)
+            failer { msg -> StrollLog.msg(msg)
+                StrollLog.msg(msg)
+        }
+```
 
 #### 下载文件示例
 ```java
 Stroll.downloadFile()
                     .setBaseUrl("http://gdown.baidu.com/data/wisegame/a920cdeb1c1f59bc/baiduwangpan_527.apk")
-                    .savePath(path, fileName)
+                    .savePath("sdcard/Stroll", "a.apk")
                     .setCallBack(object : DownloadFileCallBack{
                         override fun start() {
                         }
@@ -90,10 +100,45 @@ Stroll.downloadFile()
                     })
                     .build()
 ```
+##### or DSL 写法
+```java
+download {
+                baseUrl = "http://gdown.baidu.com/data/wisegame/a920cdeb1c1f59bc/baiduwangpan_527.apk"
+                savePath = "sdcard/Stroll"
+                fileName = "a.apk"
+                progress { pro ->
+			StrollLog.msg("下载文件进度：$pro")
+                }
+                complate {
+			StrollLog.msg("下载完成！")
+                }
+                failer { msg ->
+			StrollLog.msg("下载出错：$msg")
+                }
+            }
+```
 #### 加载图片示例
+##### 无回调
 ```java
 	val target = View(context)
         val path = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1536086522,2785217828&fm=26&gp=0.jpg"
         Stroll.loadImageWithUrl(target, path)
+```
+##### 有回调
+```java
+Stroll.loadImageWithUrl(targetView, url,true,object : ImageListener{
+            override fun progress(progress: Int) {
+                StrollLog.msg("下载进度：$progress")
+            }
+
+            override fun complate() {
+	    StrollLog.msg("下载完成")
+            }
+
+            override fun error() {
+	    StrollLog.msg("下载出错")
+            }
+
+        })
 ```
 
