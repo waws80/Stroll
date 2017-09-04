@@ -97,7 +97,7 @@ class Stroll private constructor(){
         /**
          * 全路径加载图片
          */
-        fun loadImageWithUrl(target: View, url: String, net: Boolean = true, @DrawableRes errorId: ImageListener = R.drawable.stroll_errorimg, listener: ImageListener? = null) {
+        fun loadImageWithUrl(target: View, url: String, net: Boolean = true, @DrawableRes errorId: Int = R.drawable.stroll_errorimg, listener: ImageListener? = null) {
             mConfig.imageConvert.loadUrl(mConfig,target,url,net,errorId,listener)
         }
 
