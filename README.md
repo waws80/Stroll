@@ -71,7 +71,7 @@ Stroll.install()
 ```java
 Stroll.downloadFile()
                     .setBaseUrl("http://gdown.baidu.com/data/wisegame/a920cdeb1c1f59bc/baiduwangpan_527.apk")
-                    .savePath(path, "$it$name")
+                    .savePath(path, fileName)
                     .setCallBack(object : DownloadFileCallBack{
                         override fun start() {
                         }
