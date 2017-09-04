@@ -2,28 +2,28 @@
 第一个测试版本
 #### 默认添加了如下权限：
 ```java
-	<uses-permission android:name="android.permission.INTERNET"/>
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 ```
 
 ## Gradle
 
 #### step1
 ```
-	allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
 	}
+}
 ```
 
 #### step2
 ```
-		dependencies {
-	        compile 'com.github.waws80:Stroll:v1.1'
-	}
+dependencies {
+	compile 'com.github.waws80:Stroll:v1.1'
+}
 
 ```
 
@@ -32,21 +32,21 @@
 
 #### step1
 ```
-		<repositories>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
-	</repositories>
+<repositories>
+	<repository>
+	    <id>jitpack.io</id>
+	    <url>https://jitpack.io</url>
+	</repository>
+</repositories>
 ```
 
 #### step2
 ```
-			<dependency>
-	    <groupId>com.github.waws80</groupId>
-	    <artifactId>Stroll</artifactId>
-	    <version>v1.1</version>
-	</dependency>
+<dependency>
+    <groupId>com.github.waws80</groupId>
+    <artifactId>Stroll</artifactId>
+    <version>v1.1</version>
+</dependency>
 
 
 ```
@@ -60,17 +60,17 @@ Stroll.install()
 ### step2
 ####  获取数据示例
 ```java
-        Stroll.get()
-                .setBaseUrl("https://www.baidu.com")
-                .setCallBack(object : StringCallBack {
-                    override fun success(text: String) {
-                        StrollLog.msg(text)
-                    }
-                    override fun error(msg: String) {
-                        StrollLog.msg(msg)
-                    }
-                })
-                .build()
+Stroll.get()
+	.setBaseUrl("https://www.baidu.com")
+	.setCallBack(object : StringCallBack {
+	    override fun success(text: String) {
+		StrollLog.msg(text)
+	    }
+	    override fun error(msg: String) {
+		StrollLog.msg(msg)
+	    }
+	})
+	.build()
 ```
 ##### or DSL 写法
 ```java
@@ -126,9 +126,9 @@ download {
 #### 加载图片示例
 ##### 无回调
 ```java
-	val target = View(context)
-        val path = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1536086522,2785217828&fm=26&gp=0.jpg"
-        Stroll.loadImageWithUrl(target, path)
+val target = View(context)
+val path = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1536086522,2785217828&fm=26&gp=0.jpg"
+Stroll.loadImageWithUrl(target, path)
 ```
 ##### 有回调
 ```java
