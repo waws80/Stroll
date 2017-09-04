@@ -1,5 +1,11 @@
 # Stroll   [![](https://jitpack.io/v/waws80/Stroll.svg)](https://jitpack.io/#waws80/Stroll)
 第一个测试版本
+#### 默认添加了如下权限：
+```java
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+```
 
 ## Gradle
 
@@ -69,12 +75,12 @@ Stroll.install()
 ##### or DSL 写法
 ```java
 data {
-            baseUrl = "https://www.baidu.com"
-            result { text -> StrollLog.msg(text)
-                StrollLog.msg(text)
-            failer { msg -> StrollLog.msg(msg)
-                StrollLog.msg(msg)
-        }
+    baseUrl = "https://www.baidu.com"
+    result { text -> StrollLog.msg(text)
+	StrollLog.msg(text)
+    failer { msg -> StrollLog.msg(msg)
+	StrollLog.msg(msg)
+}
 ```
 
 #### 下载文件示例
@@ -103,19 +109,19 @@ Stroll.downloadFile()
 ##### or DSL 写法
 ```java
 download {
-                baseUrl = "http://gdown.baidu.com/data/wisegame/a920cdeb1c1f59bc/baiduwangpan_527.apk"
-                savePath = "sdcard/Stroll"
-                fileName = "a.apk"
-                progress { pro ->
-			StrollLog.msg("下载文件进度：$pro")
-                }
-                complate {
-			StrollLog.msg("下载完成！")
-                }
-                failer { msg ->
-			StrollLog.msg("下载出错：$msg")
-                }
-            }
+	baseUrl = "http://gdown.baidu.com/data/wisegame/a920cdeb1c1f59bc/baiduwangpan_527.apk"
+	savePath = "sdcard/Stroll"
+	fileName = "a.apk"
+	progress { pro ->
+		StrollLog.msg("下载文件进度：$pro")
+	}
+	complate {
+		StrollLog.msg("下载完成！")
+	}
+	failer { msg ->
+		StrollLog.msg("下载出错：$msg")
+	}
+    }
 ```
 #### 加载图片示例
 ##### 无回调
