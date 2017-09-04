@@ -55,7 +55,7 @@ Stroll.install()
 ####  获取数据示例
 ```java
         Stroll.get()
-                .setBaseUrl("https://www.qigeairen.com")
+                .setBaseUrl("https://www.baidu.com")
                 .setCallBack(object : StringCallBack {
                     override fun success(text: String) {
                         StrollLog.msg(text)
@@ -65,6 +65,16 @@ Stroll.install()
                     }
                 })
                 .build()
+```
+##### or DSL 写法
+```java
+data {
+            baseUrl = "https://www.baidu.com"
+            result { text -> StrollLog.msg(text)
+                Toast.makeText(context,"获取的数据： $text",Toast.LENGTH_SHORT).show()}
+            failer { msg -> StrollLog.msg(msg)
+                Toast.makeText(context,"获取数据出错： $msg",Toast.LENGTH_SHORT).show()}
+        }
 ```
 
 #### 下载文件示例
@@ -89,6 +99,23 @@ Stroll.downloadFile()
 
                     })
                     .build()
+```
+##### or DSL 写法
+```java
+download {
+                baseUrl = "http://gdown.baidu.com/data/wisegame/a920cdeb1c1f59bc/baiduwangpan_527.apk"
+                savePath = path
+                fileName = "$it$name"
+                progress { pro ->
+			StrollLog.msg("下载文件进度：$pro")
+                }
+                complate {
+			StrollLog.msg("下载完成！")
+                }
+                failer { msg ->
+			StrollLog.msg("下载出错：$msg")
+                }
+            }
 ```
 #### 加载图片示例
 ```java
