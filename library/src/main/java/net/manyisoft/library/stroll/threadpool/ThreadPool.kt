@@ -17,7 +17,7 @@ class ThreadPool {
         LinkedBlockingDeque<Runnable>()
     }
 
-    private val threadPool = ThreadPoolExecutor(4,
+    private val threadPool = ThreadPoolExecutor(6,
             10,
             10,
             TimeUnit.SECONDS,

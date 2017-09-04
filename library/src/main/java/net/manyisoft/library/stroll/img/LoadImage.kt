@@ -16,6 +16,8 @@ import net.manyisoft.library.stroll.core.StrollConfig
 
 import net.manyisoft.library.stroll.R
 import net.manyisoft.library.stroll.core.StringCallBack
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 
 /**
  * 图片请求体
@@ -113,18 +115,16 @@ class LoadImage(private val config: StrollConfig) {
      * 校验bitmap
      */
     private fun check(bitmap: Bitmap?, url: String, target: View,cacheType: CacheType){
-        getNetImg( url, target ,cacheType)
-
-//        when (bitmap){
-//            null ->{
-//                if (net){
-//                    getNetImg( url, target ,cacheType)
-//                }else{
-//                    getNativeImg(url, target ,cacheType)
-//                }
-//            }
-//            else -> postBitmap(url,target,bitmap)
-//        }
+        when (bitmap){
+            null ->{
+                if (net){
+                    getNetImg( url, target ,cacheType)
+                }else{
+                    getNativeImg(url, target ,cacheType)
+                }
+            }
+            else -> postBitmap(url,target,bitmap)
+        }
     }
 
     /**
@@ -147,9 +147,10 @@ class LoadImage(private val config: StrollConfig) {
                 }
             }
 
-            override fun asyncSuccess(byteArray: ByteArray) {
-                val stream = byteArray.inputStream()
-                val bitmap = BitmapUtils.getNetBitmap(stream.use { it.readBytes() },target)
+            override fun asyncSuccess(contentLength: Long, stream: InputStream) {
+                super.asyncSuccess(contentLength, stream)
+                val stream = loadProgress(contentLength, stream)
+                val bitmap = BitmapUtils.getNetBitmap(stream.toByteArray(),target)
                 if (bitmap != null){
                     when(cacheType){
                         CacheType.MEMERYCACHE ->{
@@ -188,7 +189,6 @@ class LoadImage(private val config: StrollConfig) {
 
                     }
                 }
-
             }
 
             override fun error(msg: String) {
@@ -259,6 +259,28 @@ class LoadImage(private val config: StrollConfig) {
         holder.target = imageView
         message.obj = holder
         uiHandler.sendMessage(message)
+    }
+
+
+    private fun loadProgress(contentLength: Long , stream: InputStream): ByteArrayOutputStream{
+
+        var currentLength = 0
+        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+        var bytes = stream.read(buffer)
+        val bos = ByteArrayOutputStream()
+        while (bytes >0){
+            bos.write(buffer,0,bytes)
+            currentLength+=bytes
+            val progress = ((currentLength.toFloat()/contentLength.toFloat())*100).toInt()
+            uiHandler.post {
+                StrollLog.msg("   总进度：$contentLength    当前进度： $currentLength")
+                callBack?.progress(progress)
+            }
+            bytes = stream.read(buffer)
+        }
+        bos.flush()
+        bos.close()
+        return  bos
     }
 
 }

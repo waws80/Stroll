@@ -1,9 +1,11 @@
 package net.manyisoft.library.stroll.core
 
 import net.manyisoft.library.stroll.threadpool.ThreadPool
+import net.manyisoft.library.stroll.util.StrollLog
 import net.manyisoft.library.stroll.util.uiHandler
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 
 /**
  * @author liuxiongfei
@@ -132,9 +134,9 @@ class DownLoadFile (private val config: StrollConfig, private val threadPool: Th
 
             override fun success(text: String) {}
 
-            override fun asyncSuccess(byteArray: ByteArray) {
-                super.asyncSuccess(byteArray)
-                parseResult(call,byteArray)
+            override fun asyncSuccess(contentLength: Long, stream: InputStream) {
+                super.asyncSuccess(contentLength, stream)
+                parseResult(call,contentLength,stream)
             }
 
             override fun error(msg: String) {
@@ -147,16 +149,30 @@ class DownLoadFile (private val config: StrollConfig, private val threadPool: Th
 
     }
 
-    private fun parseResult(callBack: DownloadFileCallBack, byteArray: ByteArray) {
+    private fun parseResult(callBack: DownloadFileCallBack, contentLength: Long , stream: InputStream) {
 
         val file = File(this.filePath+"/"+this.fileName)
         if (file.exists()){
             uiHandler.post { callBack.error("当前文件已存在！") }
         }else{
-            val out = FileOutputStream(file)
-            out.write(byteArray,0,byteArray.size)
+
+        var currentLength = 0
+        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+        var bytes = stream.read(buffer)
+        val out = FileOutputStream(file)
+        while (bytes >0){
+            out.write(buffer,0,bytes)
+            currentLength+=bytes
+            val progress = ((currentLength.toFloat()/contentLength.toFloat())*100).toInt()
+            uiHandler.post {
+                StrollLog.msg("   总进度：$contentLength    当前进度： $currentLength")
+                callBack.progress(progress)
+            }
+            bytes = stream.read(buffer)
+        }
             out.flush()
             out.close()
+
             uiHandler.post { callBack.complate() }
         }
 

@@ -10,6 +10,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import java.nio.charset.Charset
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLSocketFactory
 
@@ -113,30 +114,10 @@ class DefaultHttpConvert : HttpConvert {
      * 向服务器获取数据
      */
     private fun downLoadData(request: HttpURLConnection, callBack: CallBack, handler: Handler) {
-        val stream = request.inputStream
-        val contentLength = request.contentLength
-
-        var currentLength = 0
-        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-        var bytes = stream.read(buffer)
-        val bos = ByteArrayOutputStream()
-        while (bytes >0){
-            bos.write(buffer,0,bytes)
-            currentLength+=bytes
-            val progress = ((currentLength.toFloat()/contentLength.toFloat())*100).toInt()
-            handler.post {
-                StrollLog.msg("   总进度：$contentLength    当前进度： $currentLength")
-                callBack.progress(progress)
-            }
-            bytes = stream.read(buffer)
-        }
-        bos.flush()
-
-        callBack.asyncSuccess(bos.toByteArray())
-        val str = bos.toString()
+        callBack.asyncSuccess(request.contentLength.toLong(),request.inputStream)
         handler.post {
             callBack.complate()
-            callBack.success(str)
+            callBack.success(String(request.inputStream.use { it.readBytes() }, Charset.forName("UTF-8")))
             if (effective(tag, url) && tag.isNotEmpty()){
                 queue.remove(url)
             }

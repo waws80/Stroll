@@ -1,6 +1,7 @@
 package net.manyisoft.library.stroll.core
 
 import org.json.JSONObject
+import java.io.InputStream
 
 /**
  * 网络访问数据成功回调函数
@@ -15,7 +16,7 @@ interface CallBack{
 
     fun complate()
 
-    fun asyncSuccess( byteArray: ByteArray)
+    fun asyncSuccess(contentLength: Long,  stream: InputStream)
 
     fun success(text: String)
 
@@ -45,7 +46,7 @@ interface StringCallBack : CallBack{
     override fun complate() {
     }
 
-    override fun asyncSuccess(byteArray: ByteArray) {
+    override fun asyncSuccess(contentLength: Long,  stream: InputStream) {
     }
 
 }
@@ -58,7 +59,7 @@ interface JsonCallBack : CallBack{
 
     override fun complate(){}
 
-    override fun asyncSuccess( byteArray: ByteArray){}
+    override fun asyncSuccess( contentLength: Long,  stream: InputStream){}
 
     override fun success(text: String){
         jsonComplate(JSONObject(text))
