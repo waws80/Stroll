@@ -9,7 +9,7 @@ import net.manyisoft.library.stroll.core.StringCallBack
  */
 open class DataWrapper {
 
-    var baseUrl: String = ""
+    var baseUrl: String = Stroll.config?.baseUrl!!
     var api: String = ""
     var params: HashMap<String,String> = HashMap()
     var headers: HashMap<String,String> = HashMap()
@@ -111,7 +111,7 @@ fun post(init: PostDataWrapper.() ->Unit){
 
 class DownloadWrapper{
 
-    var baseUrl: String = ""
+    var baseUrl: String = Stroll.config?.baseUrl!!
     var api: String = ""
     var params: HashMap<String,String> = HashMap()
     var headers: HashMap<String,String> = HashMap()
