@@ -30,11 +30,14 @@ class Stroll private constructor(){
 
         private val INSTANCE: Stroll by lazy { Stroll() }
 
+        var config: StrollConfig? = null
+
         /**
          * 全局初始化网络访问框架
          */
         fun install(config: StrollConfig = StrollConfig()): Stroll {
             mConfig = config
+            this.config = mConfig
             isInstall = true
             return INSTANCE
         }
