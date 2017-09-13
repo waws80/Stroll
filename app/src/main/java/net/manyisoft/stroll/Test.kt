@@ -1,13 +1,18 @@
 package net.manyisoft.stroll
 
 import android.content.Context
+import android.util.Log
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import net.manyisoft.library.stroll.Stroll
-import net.manyisoft.library.stroll.core.DownloadFileCallBack
-import net.manyisoft.library.stroll.core.JsonCallBack
+import net.manyisoft.library.stroll.core.CallBack
+import net.manyisoft.library.stroll.core.UploadCallBack
+import net.manyisoft.library.stroll.img.ImageListener
 import net.manyisoft.library.stroll.util.StrollLog
-import org.json.JSONObject
+import net.manyisoft.library.stroll.util.data
+import net.manyisoft.library.stroll.util.download
+import java.io.InputStream
 
 /**
  * Created by liuxiongfei on 2017/8/28.
@@ -15,21 +20,28 @@ import org.json.JSONObject
 object Test {
 
 
-    fun  testHttp(context: Context,path: String,name: String){
+    fun  testHttp(iv: TextView, iv1: TextView, iv2: TextView, iv3: TextView, iv4: TextView, context: Context, path: String, name: String){
         Stroll.install()
 
         //获取数据示例
 //        Stroll.get()
 //                .setBaseUrl("https://www.qigeairen.com")
-//                .setCallBack(object : StringCallBack{
+//                .setCallBack(object : StringCallBack {
 //                    override fun success(text: String) {
-//                        StrollLog.msg("Test::"+Thread.currentThread().name+":\n"+text)
+//                        StrollLog.msg(text)
 //                    }
 //                    override fun error(msg: String) {
-//                        StrollLog.msg("Test::"+Thread.currentThread().name+":\n"+msg)
+//                        StrollLog.msg(msg)
 //                    }
 //                })
 //                .build()
+        data {
+            baseUrl = "https://www.qigeairen.com"
+            result { text -> StrollLog.msg(text)
+                Toast.makeText(context,"获取的数据： $text",Toast.LENGTH_SHORT).show()}
+            failer { msg -> StrollLog.msg(msg)
+                Toast.makeText(context,"获取数据出错： $msg",Toast.LENGTH_SHORT).show()}
+        }
 
         //获取json数据示例
 
@@ -52,34 +64,136 @@ object Test {
 
         //下载文件示例(不支持批量下载大文件)
 
-        (0 .. 1).forEach {
-            Stroll.downloadFile()
-                    .setBaseUrl("http://gdown.baidu.com/data/wisegame/a920cdeb1c1f59bc/baiduwangpan_527.apk")
-                    .savePath(path, "$it$name")
-                    .setCallBack(object : DownloadFileCallBack{
-                        override fun start() {
-                        }
-
-                        override fun progress(pro: Int) {
-                            StrollLog.msg("AA第$it 个的进度为：$pro")
-                        }
-                        override fun complate() {
-                            StrollLog.msg("AA第$it 个下载完成！")
-                            Toast.makeText(context,"下载完成",Toast.LENGTH_SHORT).show()
-                        }
-
-                        override fun error(msg: String) {
-                            StrollLog.msg("AA第$it 个下载出错！$msg")
-                            Toast.makeText(context,"下载出错$msg",Toast.LENGTH_SHORT).show()
-                        }
-
-                    })
-                    .build()
-        }
+//        (1 .. 5).forEach {
+//            Stroll.downloadFile()
+//                    .setBaseUrl("http://gdown.baidu.com/data/wisegame/a920cdeb1c1f59bc/baiduwangpan_527.apk")
+//                    .savePath(path, "$it$name")
+//                    .setCallBack(object : DownloadFileCallBack{
+//                        override fun start() {
+//                        }
+//
+//                        override fun progress(pro: Int) {
+//                            StrollLog.msg("下载文件：---第$it 个的进度为：$pro")
+//                            when(it){
+//                                1 -> iv.text = "下载进度为：$pro"
+//                                2 -> iv1.text = "下载进度为：$pro"
+//                                3 -> iv2.text = "下载进度为：$pro"
+//                                4 -> iv3.text = "下载进度为：$pro"
+//                                5 -> iv4.text = "下载进度为：$pro"
+//
+//                            }
+//                        }
+//                        override fun complate() {
+//                            StrollLog.msg("下载文件：---第$it 个下载完成！")
+//                            when(it){
+//                                1 -> iv.text = "下载完成"
+//                                2 -> iv1.text = "下载完成"
+//                                3 -> iv2.text = "下载完成"
+//                                4 -> iv3.text = "下载完成"
+//                                5 -> iv4.text = "下载完成"
+//
+//                            }
+//                            Toast.makeText(context,"下载完成",Toast.LENGTH_SHORT).show()
+//                        }
+//
+//                        override fun error(msg: String) {
+//                            when(it){
+//                                1 -> iv.text = "下载出错"
+//                                2 -> iv1.text = "下载出错"
+//                                3 -> iv2.text = "下载出错"
+//                                4 -> iv3.text = "下载出错"
+//                                5 -> iv4.text = "下载出错"
+//
+//                            }
+//                            StrollLog.msg("下载文件：---第$it 个下载出错！$msg")
+//                            Toast.makeText(context,"下载出错$msg",Toast.LENGTH_SHORT).show()
+//                        }
+//
+//                    })
+//                    .build()
+//        }
 
         //加载图片示例
-//        val target = View(context)
-//        val path = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1536086522,2785217828&fm=26&gp=0.jpg"
+        val target = View(context)
+        val url = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1536086522,2785217828&fm=26&gp=0.jpg"
 //        Stroll.loadImageWithUrl(target, path)
+
+        Stroll.loadImageWithUrl(target, url,true, listener = object : ImageListener{
+            override fun progress(progress: Int) {
+
+            }
+
+            override fun complate() {
+            }
+
+            override fun error() {
+            }
+
+        })
+
+        //文件上传示例
+        val files = HashMap<String,String>()
+        files.put("file","/sdcard/standerPhoto/1505291618.jpeg")
+        Stroll.uploadFrom()
+                .setBaseUrl("http://192.168.0.101:8080/thanatos/upload")
+                //.setBaseUrl("http://101.200.60.239:80/")
+               // .setPath("img/upload/img/jhtml")
+                .setFilePaths(files).setCallBack(object : UploadCallBack{
+
+            override fun error(msg: String) {
+                log(msg)
+            }
+
+            override fun progress(pro: Int) {
+                log("当前进度：$pro")
+            }
+
+            override fun success(text: String) {
+                log(text)
+            }
+
+        }).build()
+        //文件下载示例
+//        (1 .. 5).forEach {
+//            download {
+//                baseUrl = "http://gdown.baidu.com/data/wisegame/a920cdeb1c1f59bc/baiduwangpan_527.apk"
+//                savePath = path
+//                fileName = "$it$name"
+//                progress { pro ->
+//                    when (it) {
+//                        1 -> iv.text = "下载进度为：$pro"
+//                        2 -> iv1.text = "下载进度为：$pro"
+//                        3 -> iv2.text = "下载进度为：$pro"
+//                        4 -> iv3.text = "下载进度为：$pro"
+//                        5 -> iv4.text = "下载进度为：$pro"
+//
+//                    }
+//                }
+//                complate {
+//                    when(it){
+//                        1 -> iv.text = "下载完成"
+//                        2 -> iv1.text = "下载完成"
+//                        3 -> iv2.text = "下载完成"
+//                        4 -> iv3.text = "下载完成"
+//                        5 -> iv4.text = "下载完成"
+//
+//                    }
+//                }
+//                failer { msg ->
+//                    when(it){
+//                        1 -> iv.text = "1下载出错:$msg"
+//                        2 -> iv1.text = "2下载出错:$msg"
+//                        3 -> iv2.text = "3下载出错:$msg"
+//                        4 -> iv3.text = "4下载出错:$msg"
+//                        5 -> iv4.text = "5下载出错:$msg"
+//
+//                    }
+//                }
+//            }
+//        }
+    }
+
+    fun log(msg: String){
+        Log.d("上传示例：",msg)
     }
 }

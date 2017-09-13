@@ -4,10 +4,12 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import net.manyisoft.library.stroll.Stroll;
 import net.manyisoft.library.stroll.core.StrollConfig;
+import net.manyisoft.library.stroll.img.ImageListener;
 
 import java.io.File;
 
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         File file = new File(path);
         if (!file.exists()) file.mkdirs();
 
-        Test.INSTANCE.testHttp(this,file.getAbsolutePath() ,".apk");
+
 
         iv = (TextView) findViewById(R.id.iv);
         iv1 = (TextView) findViewById(R.id.iv1);
@@ -57,29 +59,31 @@ public class MainActivity extends AppCompatActivity {
         iv3 = (TextView) findViewById(R.id.iv3);
         iv4 = (TextView) findViewById(R.id.iv4);
 
-        String a = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1536086522,2785217828&fm=26&gp=0.jpg";
+        Test.INSTANCE.testHttp(iv,iv1,iv2,iv3,iv4,this,file.getAbsolutePath() ,".apk");
 
-            //加载图片带回调
-//            Stroll.Companion.loadImageWithUrl(iv, a, true, -1, new ImageListener() {
-//                @Override
-//                public void progress(int progress) {
-//                    iv.setText(progress+"");
-//                    Log.w("TAG",":::"+ progress);
-//                }
+        String a = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1536086522,2785217828&fm=26&gp=0.jpg";
 //
-//                @Override
-//                public void complate() {
-//                    iv.setText("加载完成:     ");
-//                }
-//
-//                @Override
-//                public void error() {
-//                    iv.setText("加载失败");
-//                }
-//            });
+//            //加载图片带回调
+            Stroll.Companion.loadImageWithUrl(iv, a, true, -1, new ImageListener() {
+                @Override
+                public void progress(int progress) {
+                    iv.setText(progress+"");
+                    Log.w("TAG",":::"+ progress);
+                }
+
+                @Override
+                public void complate() {
+                    iv.setText("加载完成:     ");
+                }
+
+                @Override
+                public void error() {
+                    iv.setText("加载失败");
+                }
+            });
 //
 //        //加载图片不带回调
-//        Stroll.Companion.loadImageWithUrl(iv, a, true, R.drawable.stroll_errorimg,null);
+        Stroll.Companion.loadImageWithUrl(iv, a, true, R.drawable.stroll_errorimg,null);
 
     }
 

@@ -82,3 +82,12 @@ interface DownloadFileCallBack {
 
 
 }
+
+interface UploadCallBack: CallBack{
+
+    override fun start(){}
+    override fun progress(pro: Int){}
+    override fun complate(){}
+    override fun asyncSuccess(contentLength: Long,  stream: InputStream){}
+
+}

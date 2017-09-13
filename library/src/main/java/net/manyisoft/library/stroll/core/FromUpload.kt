@@ -15,7 +15,7 @@ class FromUpload(val config: StrollConfig, val threadPool: ThreadPool) : Upload{
 
     private var body: ByteArray = ByteArray(0)
 
-    private var files: MutableList<File> = mutableListOf()
+    private var files: HashMap<String,File> = HashMap()
 
     private var params: HashMap<String,String> = HashMap()
 
@@ -86,12 +86,12 @@ class FromUpload(val config: StrollConfig, val threadPool: ThreadPool) : Upload{
         return this
     }
 
-    fun setFilePaths(filePaths: MutableList<String>): FromUpload{
+    fun setFilePaths(filePaths: HashMap<String,String>): FromUpload{
         try {
             filePaths.forEach {
-                val file = File(it)
+                val file = File(it.value)
                 if (file.exists()){
-                    this.files.add(file)
+                    this.files.put(it.key,file)
                 }else{
                     StrollLog.msg("当前文件不存在：$it")
                 }
@@ -163,18 +163,19 @@ class FromUpload(val config: StrollConfig, val threadPool: ThreadPool) : Upload{
         //添加多文件
         var b2 = ByteArray(0)
         if (this.files.isNotEmpty()){
-            (0 .. this.files.size).forEach {
-                val path: String = this.files[it].absolutePath
+            files.forEach {
+                val path: String = it.value.absolutePath
                 val fileSb = StringBuilder()
                 fileSb.append(twoHyphens+boundary+end)
-                fileSb.append("Content-Disposition: form-data; name=\"uploadedfile\"; filename=\""+
+                fileSb.append("Content-Disposition: form-data; name=\"${it.key}\"; filename=\""+
                         path.substring(path.lastIndexOf("/")+1)+
                         "\""+
                         end)
+                fileSb.append("Content-Type: multipart/form-data; charset=UTF-8$end")
                 fileSb.append(end)
                 val bFileSB = fileSb.toString().toByteArray(Charset.forName("UTF-8"))
 
-                val bFile = FileInputStream(this.files[it]).use { it.readBytes() }
+                val bFile = FileInputStream(it.value).use { it.readBytes() }
 
                 val bEnd = end.toByteArray(Charset.forName("UTF-8"))
                 b2+= bFileSB+bFile+bEnd
