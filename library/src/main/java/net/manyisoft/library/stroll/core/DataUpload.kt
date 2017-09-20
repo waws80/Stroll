@@ -14,10 +14,10 @@ import java.nio.charset.Charset
  * @author liuxiongfei
  * 数据上传核心实现类.
  * 与from表单提交不同的是提交到后台的数据为json格式数据格式如下：
- * { "data":"文本数据", "images":["","",""],"files":[{"fileName":"a.text","str":""},{"fileName":"a.jpeg","str":""}]}
+ * { "data":"文本数据", "images":[{"imgName":"a","str":""}],"files":[{"fileName":"a","str":""},{"fileName":"a","str":""}]}
  * 说明： data: 可以是字符串 json数组（内部自由组合）
- *       image: Base64字符串 以json数组形式保存 （内部自由组合）
- *       file: Base64字符串 以json数组形式保存 （内部自由组合）
+ *       image: Base64字符串 以json数组形式保存图片名字和字符串
+ *       file: Base64字符串 以json数组形式保存文件名字和字符串
  */
 class DataUpload (private val config: StrollConfig, private val threadPool: ThreadPool) : Upload{
 
@@ -28,13 +28,13 @@ class DataUpload (private val config: StrollConfig, private val threadPool: Thre
 
     private var data: String = ""
 
-    private var imageStrs: MutableList<String> = mutableListOf()
+    private var imageStrs = HashMap<String,String>()
 
-    private var fileStrs: MutableList<String> = mutableListOf()
+    private var fileStrs = HashMap<String,String>()
 
-    private var images: MutableList<Bitmap> = mutableListOf()
+    private var images = HashMap<String,Bitmap>()
 
-    private var files: MutableList<File> = mutableListOf()
+    private var files = HashMap<String,File>()
 
 
     private var mBaseUrl = config.baseUrl
@@ -99,22 +99,22 @@ class DataUpload (private val config: StrollConfig, private val threadPool: Thre
         return this
     }
 
-    fun setImageStrs(base64strs: MutableList<String>): DataUpload{
-        this.imageStrs = base64strs
+    fun setImageStrs(keyAndBase64Strs: HashMap<String,String>): DataUpload{
+        this.imageStrs = keyAndBase64Strs
         return this
     }
 
-    fun setFileStrs(strs: MutableList<String>): DataUpload{
+    fun setFileStrs(strs: HashMap<String,String>): DataUpload{
         this.fileStrs = strs
         return this
     }
 
-    fun setImages(bitmaps: MutableList<Bitmap>): DataUpload{
-        this.images = bitmaps
+    fun setImages(keyAndBitmaps: HashMap<String,Bitmap>): DataUpload{
+        this.images = keyAndBitmaps
         return this
     }
 
-    fun setFiles(files: MutableList<File>): DataUpload{
+    fun setFiles(files: HashMap<String,File>): DataUpload{
         this.files = files
         return this
     }
@@ -150,7 +150,7 @@ class DataUpload (private val config: StrollConfig, private val threadPool: Thre
 
     /**
      * 制作body体
-     * { "data":"文本数据", "images":["","",""],"files":[{"fileName":"a.text","str":""},{"fileName":"a.jpeg","str":""}]}
+     * { "data":"文本数据", "images":[{"imgName":"a","str":""}],"files":[{"fileName":"a","str":""},{"fileName":"a","str":""}]}
      */
     private fun makeBody(){
 
@@ -159,42 +159,55 @@ class DataUpload (private val config: StrollConfig, private val threadPool: Thre
         //添加数据
         json.put("data",this.data)
 
-        //添加图片
+        //添加图片[{"imgName":"a","str":""}]
         val images = JSONArray()
 
         if (this.imageStrs.isNotEmpty()){
-            this.imageStrs.forEach { images.put(it) }
+            this.imageStrs.forEach {
+                val imgJson = JSONObject()
+                imgJson.put("imgName",it.key)
+                imgJson.put("str",it.value)
+                images.put(imgJson)
+            }
         }
         if (this.images.isNotEmpty()){
             this.images.forEach {
                 val bos = ByteArrayOutputStream()
-                it.compress(Bitmap.CompressFormat.JPEG,100,bos)
+                it.value.compress(Bitmap.CompressFormat.JPEG,100,bos)
                 bos.flush()
                 bos.close()
-                images.put(Base64.encodeToString(bos.toByteArray(),Base64.DEFAULT))
+                val imgJson = JSONObject()
+                imgJson.put("imgName",it.key)
+                imgJson.put("str",Base64.encodeToString(bos.toByteArray(),Base64.DEFAULT))
+                images.put(imgJson)
             }
         }
         json.put("images",images)
 
-        //添加文件
+        //添加文件[{"fileName":"a","str":""}]
         val files = JSONArray()
 
         if (this.fileStrs.isNotEmpty()){
-            this.fileStrs.forEach { files.put(it) }
+            this.fileStrs.forEach {
+                val fileJson = JSONObject()
+                fileJson.put("fileName",it.key)
+                fileJson.put("str",it.value)
+                files.put(fileJson)
+            }
         }
 
-        //{"fileName":"a.text","str":""}
         if (this.files.isNotEmpty()){
             this.files.forEach {
-                val path = it.absolutePath
-                val name = path.substring(path.lastIndexOf("/")+1)
-                val str = Base64.encodeToString(FileInputStream(it).use { it.readBytes() },Base64.DEFAULT)
+                val name = it.key
+                val str = Base64.encodeToString(FileInputStream(it.value).use { it.readBytes() },Base64.DEFAULT)
                 val fileJson = JSONObject()
                 fileJson.put("fileName",name)
                 fileJson.put("str",str)
                 files.put(fileJson)
             }
         }
+
+        json.put("files",files)
 
 
         //将组合的数据组合成body

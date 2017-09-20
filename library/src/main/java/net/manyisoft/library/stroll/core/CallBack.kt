@@ -83,11 +83,27 @@ interface DownloadFileCallBack {
 
 }
 
+
 interface UploadCallBack: CallBack{
 
     override fun start(){}
     override fun progress(pro: Int){}
     override fun complate(){}
     override fun asyncSuccess(contentLength: Long,  stream: InputStream){}
+
+}
+
+interface UploadJsonCallBack: UploadCallBack{
+
+    override fun start(){}
+
+
+    override fun complate(){}
+
+    override fun success(text: String) {
+        jsonComplate(JSONObject(text))
+    }
+
+    fun jsonComplate(json: JSONObject)
 
 }

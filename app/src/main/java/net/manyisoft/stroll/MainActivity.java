@@ -85,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
 //        //加载图片不带回调
         Stroll.Companion.loadImageWithUrl(iv, a, true, R.drawable.stroll_errorimg,null);
 
+
+
+
     }
 
 }

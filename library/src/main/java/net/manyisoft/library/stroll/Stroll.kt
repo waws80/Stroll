@@ -93,8 +93,16 @@ class Stroll private constructor(){
          * path加载图片
          */
         fun loadImageWithPath(target: View, path: String, net: Boolean = true, @DrawableRes errorId: Int = R.drawable.stroll_errorimg, listener: ImageListener? = null) {
-            val convert = mConfig.imageConvert::class.java.newInstance()
             mConfig.imageConvert.loadUrl(mConfig,target,mConfig.baseUrl+path,net,errorId,listener)
+        }
+
+        fun loadImage(target: View?,path: String, @DrawableRes errorId: Int = R.drawable.stroll_errorimg, listener: ImageListener? = null){
+            if (target == null) throw NullPointerException("请求图片的目标view为空")
+            var net = false
+            if (path.startsWith("http")){
+                net = true
+            }
+            mConfig.imageConvert.loadUrl(mConfig,target!!,path,net,errorId,listener)
         }
 
         /**

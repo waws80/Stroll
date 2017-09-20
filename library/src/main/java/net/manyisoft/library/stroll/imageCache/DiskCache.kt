@@ -40,6 +40,7 @@ import java.io.FileOutputStream
         if (!f.exists()){
             f.mkdirs()
         }
+        if (!f.exists())return
         val bos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG,100,bos)
         bos.flush()

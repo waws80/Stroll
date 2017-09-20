@@ -1,6 +1,8 @@
 package net.manyisoft.stroll
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.View
 import android.widget.TextView
@@ -9,9 +11,9 @@ import net.manyisoft.library.stroll.Stroll
 import net.manyisoft.library.stroll.core.CallBack
 import net.manyisoft.library.stroll.core.UploadCallBack
 import net.manyisoft.library.stroll.img.ImageListener
-import net.manyisoft.library.stroll.util.StrollLog
-import net.manyisoft.library.stroll.util.data
-import net.manyisoft.library.stroll.util.download
+import net.manyisoft.library.stroll.util.*
+import org.json.JSONObject
+import java.io.File
 import java.io.InputStream
 
 /**
@@ -20,7 +22,7 @@ import java.io.InputStream
 object Test {
 
 
-    fun  testHttp(iv: TextView, iv1: TextView, iv2: TextView, iv3: TextView, iv4: TextView, context: Context, path: String, name: String){
+    fun  testHttp(iv: TextView, iv1: TextView, iv2: TextView, iv3: TextView, iv4: TextView, context: Context, mpath: String, name: String){
         Stroll.install()
 
         //获取数据示例
@@ -35,13 +37,13 @@ object Test {
 //                    }
 //                })
 //                .build()
-        data {
-            baseUrl = "https://www.qigeairen.com"
-            result { text -> StrollLog.msg(text)
-                Toast.makeText(context,"获取的数据： $text",Toast.LENGTH_SHORT).show()}
-            failer { msg -> StrollLog.msg(msg)
-                Toast.makeText(context,"获取数据出错： $msg",Toast.LENGTH_SHORT).show()}
-        }
+//        data {
+//            baseUrl = "https://www.qigeairen.com"
+//            result { text -> StrollLog.msg(text)
+//                Toast.makeText(context,"获取的数据： $text",Toast.LENGTH_SHORT).show()}
+//            failer { msg -> StrollLog.msg(msg)
+//                Toast.makeText(context,"获取数据出错： $msg",Toast.LENGTH_SHORT).show()}
+//        }
 
         //获取json数据示例
 
@@ -114,45 +116,88 @@ object Test {
 //        }
 
         //加载图片示例
-        val target = View(context)
-        val url = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1536086522,2785217828&fm=26&gp=0.jpg"
-//        Stroll.loadImageWithUrl(target, path)
-
-        Stroll.loadImageWithUrl(target, url,true, listener = object : ImageListener{
-            override fun progress(progress: Int) {
-
-            }
-
-            override fun complate() {
-            }
-
-            override fun error() {
-            }
-
-        })
+//        val target = View(context)
+//        val url = "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1536086522,2785217828&fm=26&gp=0.jpg"
+////        Stroll.loadImageWithUrl(target, path)
+//
+//        Stroll.loadImageWithUrl(target, url,true, listener = object : ImageListener{
+//            override fun progress(progress: Int) {
+//
+//            }
+//
+//            override fun complate() {
+//            }
+//
+//            override fun error() {
+//            }
+//
+//        })
 
         //文件上传示例
-        val files = HashMap<String,String>()
-        files.put("file","/sdcard/standerPhoto/1505291618.jpeg")
-        Stroll.uploadFrom()
-                .setBaseUrl("http://192.168.0.101:8080/thanatos/upload")
-                //.setBaseUrl("http://101.200.60.239:80/")
-               // .setPath("img/upload/img/jhtml")
-                .setFilePaths(files).setCallBack(object : UploadCallBack{
+//        val files = HashMap<String,String>()
+//        files.put("file","/sdcard/standerPhoto/1505291618.jpeg")
+//        Stroll.uploadFrom()
+//                .setBaseUrl("http://192.168.0.101:8080/thanatos/upload")
+//                //.setBaseUrl("http://101.200.60.239:80/")
+//               // .setPath("img/upload/img/jhtml")
+//                .setFilePaths(files).setCallBack(object : UploadCallBack{
+//
+//            override fun error(msg: String) {
+//                log(msg)
+//            }
+//
+//            override fun progress(pro: Int) {
+//                log("当前进度：$pro")
+//            }
+//
+//            override fun success(text: String) {
+//                log(text)
+//            }
+//
+//        }).build()
 
-            override fun error(msg: String) {
-                log(msg)
+        //上传dsl
+//        val mfiles = HashMap<String,String>()
+//        mfiles.put("file","/sdcard/standerPhoto/1505291618.jpeg")
+//        val mfilesd = HashMap<String,String>()
+//        mfilesd.put("file","zhangsan张三")
+//        form {
+//            baseUrl = "http://192.168.0.100:8080/thanatos/upload"
+//            filePaths = mfiles
+//            formDatas = mfilesd
+//            success { s -> log(s) }
+//            progress { p -> log("当前进度：$p") }
+//            failer { s -> log(s) }
+//        }
+        val mfile = HashMap<String,File>()
+        mfile.put("file", File("/sdcard/standerPhoto/1505291618.jpeg"))
+        val mData = JSONObject().put("from","我来自mutableData").toString()
+        val mImg = HashMap<String, Bitmap>()
+        mImg.put("img",BitmapFactory.decodeFile("/sdcard/standerPhoto/1505291618.jpeg"))
+        stroll_mutableData {
+            baseUrl = "http://192.168.0.100:8080/thanatos/upload"
+            files = mfile
+            data = mData
+            imgs = mImg
+            result { s -> log(s) }
+            progress { p -> log("当前进度：$p")}
+            failer { s -> log(s) }
+        }
+
+        stroll_img {
+            target = iv1
+            path = "/sdcard/standerPhoto/1505291618.jpeg"
+            complate {
+                log("家在本地图片完成")
             }
-
-            override fun progress(pro: Int) {
-                log("当前进度：$pro")
+            failer {
+                log("家在本地图片出错")
             }
+        }
 
-            override fun success(text: String) {
-                log(text)
-            }
 
-        }).build()
+
+
         //文件下载示例
 //        (1 .. 5).forEach {
 //            download {
