@@ -22,7 +22,7 @@ allprojects {
 #### step2
 ```
 dependencies {
-	compile 'com.github.waws80:Stroll:v2.0'
+	ompile 'com.github.waws80:Stroll:v2.1'
 }
 
 ```
@@ -45,7 +45,7 @@ dependencies {
 <dependency>
     <groupId>com.github.waws80</groupId>
     <artifactId>Stroll</artifactId>
-    <version>v2.0</version>
+    <version>v2.1</version>
 </dependency>
 
 
