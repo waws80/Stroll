@@ -22,7 +22,7 @@ allprojects {
 #### step2
 ```
 dependencies {
-	compile 'com.github.waws80:Stroll:v1.5'
+	compile 'com.github.waws80:Stroll:v2.0'
 }
 
 ```
@@ -45,7 +45,7 @@ dependencies {
 <dependency>
     <groupId>com.github.waws80</groupId>
     <artifactId>Stroll</artifactId>
-    <version>v1.5</version>
+    <version>v2.0</version>
 </dependency>
 
 
@@ -74,12 +74,21 @@ Stroll.get()
 ```
 ##### or DSL 写法
 ```java
-data {
+stroll_data {
     baseUrl = "https://www.baidu.com"
     result { text -> StrollLog.msg(text)
 	StrollLog.msg(text)
     failer { msg -> StrollLog.msg(msg)
 	StrollLog.msg(msg)
+}
+```
+```java
+stroll_post { 
+    api = ""
+    headers = HashMap()
+    body = ""
+    result { s -> log(s) }
+    failer { s -> log(s) }
 }
 ```
 
@@ -108,7 +117,7 @@ Stroll.downloadFile()
 ```
 ##### or DSL 写法
 ```java
-download {
+stroll_download {
 	baseUrl = "http://gdown.baidu.com/data/wisegame/a920cdeb1c1f59bc/baiduwangpan_527.apk"
 	savePath = "sdcard/Stroll"
 	fileName = "a.apk"
@@ -147,4 +156,61 @@ Stroll.loadImageWithUrl(targetView, url,true,object : ImageListener{
 
         })
 ```
+##### dsl
+```java
+stroll_img {
+    target = iv1
+    path = "/sdcard/standerPhoto/1505291618.jpeg"//无需区别是本地图片还是网络图片只需要写入路径即可。网络示例："http://ssss.sss.sss.sss"
+    complate {
+	log("加载本地图片完成")
+    }
+    failer {
+	log("加载本地图片出错")
+    }
+}
+```
+#### 上传form表单
+##### 上传示例：
+```java
+val mfiles = HashMap<String,String>()
+mfiles.put("file","/sdcard/standerPhoto/1505291618.jpeg")
+val mData = HashMap<String,String>()
+mData.put("name","张三")
+Stroll.uploadFrom().setBaseUrl("http://192.168.0.100:8080")
+	.setPath("/thanatos/upload")
+	.setFilePaths(mfiles)//key 自定义文件名字 value FilePath
+	.setFromParams(mData)//key value
+	.setCallBack(object : UploadCallBack{
+	    override fun success(text: String) {
+		log(text)
+	    }
+
+	    override fun error(msg: String) {
+		log(msg)
+	    }
+
+	})
+	.build()
+```
+##### dsl 写法 
+```java
+val mfiles = HashMap<String,String>()
+mfiles.put("file","/sdcard/standerPhoto/1505291618.jpeg")
+val mData = HashMap<String,String>()
+mData.put("name","张三")
+stroll_form {
+    baseUrl = "http://192.168.0.100:8080/thanatos/upload"
+    filePaths = mfiles
+    formDatas = mData
+    result { s -> log(s) }
+    progress { p -> log("当前进度：$p") }
+    failer { s -> log(s) }
+}
+```
+#### 特别提醒
+
+```java
+除过下载文件，其他回调均有带json回调的函数例如：form表单上传的json回调为：UploadJsonCallBack  DSL josn回调为：resultJson
+````
+
 
