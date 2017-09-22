@@ -7,6 +7,7 @@ import android.os.Looper
 import android.os.Message
 import android.support.annotation.IdRes
 import android.view.View
+import android.widget.ImageView
 
 import net.manyisoft.library.stroll.imageCache.MemeryCache
 import net.manyisoft.library.stroll.imageCache.DoubleCache
@@ -48,7 +49,11 @@ class LoadImage(private val config: StrollConfig) {
                 val bitmap = imageHolder.bitmap
                 val view = imageHolder.target
                 if (view!!.tag.toString() == path){
-                    view.setBackgroundDrawable(BitmapDrawable(bitmap))
+                    when(view){
+                        is ImageView -> view.setImageBitmap(bitmap)
+                        else -> view.setBackgroundDrawable(BitmapDrawable(bitmap))
+                    }
+
                     if (callBack != null){
                         callBack!!.complate()
                     }
